@@ -6,12 +6,12 @@ var cTable = require('console.table');
 var connection = mysql.createConnection({
 
   host: 'localhost',
-  port: 3306,
+  port: 3000,
 
   user: 'root',
 
 
-  password: 'root',
+  password: 'DodgeCity41',
   database: 'bamazon_db'
 });
 
@@ -58,9 +58,11 @@ function whatMany() {
           //finding the matching item
           var idmatch = ItemArr.find(function(num) {
             return num == chosenItem;
+
           });
         };
-        console.log('$'+idmatch.price);
+          console.log("how do I get the object for the item chosen?")
+
 
 
       })

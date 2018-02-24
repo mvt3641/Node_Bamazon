@@ -11,7 +11,7 @@ CREATE TABLE products(
   product_name VARCHAR(20),
   department_name VARCHAR(30),
   price INT(10),
-  stock_quantity INT(10)
+  stock_quantity INT(10),
   PRIMARY KEY (item_id)
 );
 

@@ -1,17 +1,19 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 var cTable = require('console.table');
+// var $ = require('jQuery');
+// var jsdom = require('jsdom');
 
 
 var connection = mysql.createConnection({
 
   host: 'localhost',
-  port: 3306,
+  port: 3000,
 
   user: 'root',
 
 
-  password: 'root',
+  password: 'DodgeCity41',
   database: 'bamazon_db'
 });
 
@@ -38,15 +40,8 @@ function whatMany() {
   inquirer
     .prompt([{
         name: 'which',
-        type: 'list',
+        type: 'input',
         message: 'What is the Item id of the product to purchase?',
-        choices: function(){
-        var choiceArr =[];
-        for (var i=0;i<results.length;i++){
-          choiceArr.push(results[i].item);
-        }
-        return choiceArr;
-      }
     },
       {
         name: 'HowMany',
@@ -54,10 +49,8 @@ function whatMany() {
         message: 'How many would you like to purchase?'
       }
     ]).then(function(answer) {
-      //Query the DB for results
-
         var chosenItem = answer.which;
-        //Array to hold item numbers
+        // //Array to hold item numbers
         var ItemArr = [];
         //Looping through results
         for (var i = 0; i < results.length; i++) {
@@ -66,13 +59,37 @@ function whatMany() {
           //finding the matching item
           var idmatch = ItemArr.find(function(num) {
             return num == chosenItem;
+
           });
+
         };
-        console.log('$'+idmatch.price);
+          var item = results[idmatch].item_id -1;
+          var itemquan = results[item].stock_quantity -1;
+           var update = itemquan -= answer.HowMany;
 
+          if (answer.HowMany > itemquan){
+            console.log("That quantity is not avalible at this time");
+            start();
+          }else{
 
+            connection.query(
+              "UPDATE products SET ? WHERE ?",
+              [
+                {
+                  stock_quantity: update
+                },
+                {
+                  item_id: results[idmatch].item_id
+                }
+              ],
+              function(err){
+                if (err) throw err;
+                console.log("sold")
+                start();
+              }
+            );
+          }
 
-      console.log(answer.HowMany);
     })
   })
 }
