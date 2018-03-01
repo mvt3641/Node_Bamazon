@@ -1,6 +1,8 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 var cTable = require('console.table');
+// var $ = require('jQuery');
+// var jsdom = require('jsdom');
 
 
 var connection = mysql.createConnection({
@@ -28,28 +30,28 @@ function start() {
     console.log("                                               \n");
     console.table(results);
     console.log("************************************************");
+    whatMany();
   })
-  whatMany();
+
 };
 
 
 function whatMany() {
-  inquirer
-    .prompt([{
-        name: 'which',
-        type: 'input',
-        message: 'What is the Item id of the product to purchase?'
-      },
-      {
-        name: 'HowMany',
-        type: 'input',
-        message: 'How many would you like to purchase?'
-      }
-    ]).then(function(answer) {
-      //Query the DB for results
-      connection.query("SELECT * FROM products", function(err, results) {
-        var chosenItem = answer.which;
-        //Array to hold item numbers
+  connection.query("SELECT * FROM products", function(err, results) {
+    inquirer
+      .prompt([{
+          name: 'which',
+          type: 'input',
+          message: 'What is the Item id of the product to purchase?',
+        },
+        {
+          name: 'HowMany',
+          type: 'input',
+          message: 'How many would you like to purchase?'
+        }
+      ]).then(function(answer) {
+        // var chosenItem = answer.which;
+        // //Array to hold item numbers
         var ItemArr = [];
         //Looping through results
         for (var i = 0; i < results.length; i++) {
@@ -57,15 +59,79 @@ function whatMany() {
           ItemArr.push(results[i].item_id);
           //finding the matching item
           var idmatch = ItemArr.find(function(num) {
-            return num == chosenItem;
-
+            // return num == chosenItem;
+            return num == answer.which;
           });
-        };
-          console.log("how do I get the object for the item chosen?")
+
+        }
+        var item = results[idmatch - 1].item_id;
+        var itemquan = results[idmatch - 1].stock_quantity;
+        var name = results[idmatch - 1].product_name;
+        var update = itemquan -= answer.HowMany;
+
+        if (answer.HowMany > itemquan) {
+          console.log("That quantity is not avalible at this time");
+          start();
+        } else {
+          connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [{
+                stock_quantity: update
+              },
+              {
+                item_id: item
+              }
+            ],
+            function(err) {
+              if (err) throw err;
+              console.log("sold Qty: " + answer.HowMany + 'Item ID: ' + answer.which)
+              start();
+            }
+          );
 
 
+        }
+        // console.log('Chosen item number: '+answer.which);
+        // console.log('Chosen Qty: '+answer.HowMany);
+        // console.log(item);
+        // console.log(itemquan);
+        // console.log(name);
 
-      })
-      console.log(answer.HowMany);
-    })
-}
+      });
+  })
+};
+
+
+//           var item = results[idmatch].item_id -1;
+//           var itemquan = results[item].stock_quantity -1;
+//            var update = function(){ itemquan -= answer.HowMany;
+//            };
+//
+//           if (answer.HowMany > itemquan){
+//             console.log("That quantity is not avalible at this time");
+//             start();
+//
+//
+//           }else{
+//
+//             connection.query(
+//               "UPDATE products SET ? WHERE ?",
+//               [
+//                 {
+//                   stock_quantity: -answer.HowMany
+//                 },
+//                 {
+//                   item_id: results[idmatch].item_id
+//                 }
+//               ],
+//               function(err){
+//                 if (err) throw err;
+//                 console.log("sold Qty: "+answer.HowMany+'Item ID: '+answer.which)
+//                 start();
+//               }
+//             );
+//           }
+//
+//     })
+//
+// }
