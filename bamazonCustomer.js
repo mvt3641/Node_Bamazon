@@ -8,12 +8,12 @@ var cTable = require('console.table');
 var connection = mysql.createConnection({
 
   host: 'localhost',
-  port: 3000,
+  port: 3306,
 
   user: 'root',
 
 
-  password: 'DodgeCity41',
+  password: 'root',
   database: 'bamazon_db'
 });
 
@@ -68,6 +68,7 @@ function whatMany() {
         var itemquan = results[idmatch - 1].stock_quantity;
         var name = results[idmatch - 1].product_name;
         var update = itemquan -= answer.HowMany;
+        var total = results[idmatch - 1].price *= answer.HowMany;
 
         if (answer.HowMany > itemquan) {
           console.log("That quantity is not avalible at this time");
@@ -84,7 +85,11 @@ function whatMany() {
             ],
             function(err) {
               if (err) throw err;
-              console.log("sold Qty: " + answer.HowMany + 'Item ID: ' + answer.which)
+              console.log('\n');
+              console.log("Sold Qty: " + answer.HowMany);
+              console.log('Item ID: ' + answer.which);
+              console.log('Product: '+ name);
+              console.log("Total: $"+total);
               start();
             }
           );
