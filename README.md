@@ -1,3 +1,4 @@
 # Node_Bamazon
 
-![alt text](https://raw.github.com/mvt3641/Node_Bamazon/tree/master/Screenshots/CustomerView.png)
+#Screenshot
+![alt text](https://raw.githubusercontent.com/mvt3641/Node_Bamazon/master/Screenshots/CustomerView.PNG)
